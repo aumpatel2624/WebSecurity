@@ -3,6 +3,7 @@ import http from 'http';
 import tls from 'tls';
 import { URL } from 'url';
 import type { SSLInfo, HeadersInfo, PortsInfo } from '@shared/schema';
+import { pythonScanner } from './python-scanner';
 
 export class VulnerabilityScanner {
   private securityHeaders = [
