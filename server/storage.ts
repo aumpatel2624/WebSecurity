@@ -1,4 +1,5 @@
 import { scans, type Scan, type InsertScan } from "@shared/schema";
+import { MongoStorage } from "./mongo-storage";
 
 export interface IStorage {
   getScan(id: number): Promise<Scan | undefined>;
@@ -49,4 +50,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use MongoDB if connection string is provided, otherwise fallback to in-memory
+export const storage: IStorage = process.env.MONGODB_URI 
+  ? new MongoStorage() 
+  : new MemStorage();

@@ -28,47 +28,52 @@ export function ScanForm() {
   const scanMutation = useMutation({
     mutationFn: scanApi.startScan,
     onSuccess: (data) => {
-      toast({
-        title: "Scan Started",
-        description: `Scanning ${form.getValues().url}...`,
-      });
-      
-      setIsScanning(true);
-      setScanProgress(0);
-      
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setScanProgress(prev => {
-          const newProgress = prev + Math.random() * 15;
-          if (newProgress >= 100) {
-            clearInterval(progressInterval);
-            setIsScanning(false);
-            setScanProgress(0);
-            
-            // Invalidate and refetch scans
-            queryClient.invalidateQueries({ queryKey: ["/api/scans"] });
-            queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
-            
-            toast({
-              title: "Scan Complete",
-              description: "Vulnerability analysis finished successfully.",
-            });
-            
-            form.reset();
-            return 100;
-          }
-          return newProgress;
+      // Use setTimeout to avoid state updates during render
+      setTimeout(() => {
+        toast({
+          title: "Scan Started",
+          description: `Scanning ${form.getValues().url}...`,
         });
-      }, 200);
+        
+        setIsScanning(true);
+        setScanProgress(0);
+        
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setScanProgress(prev => {
+            const newProgress = prev + Math.random() * 15;
+            if (newProgress >= 100) {
+              clearInterval(progressInterval);
+              setIsScanning(false);
+              setScanProgress(0);
+              
+              // Invalidate and refetch scans
+              queryClient.invalidateQueries({ queryKey: ["/api/scans"] });
+              queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+              
+              toast({
+                title: "Scan Complete",
+                description: "Vulnerability analysis finished successfully.",
+              });
+              
+              form.reset();
+              return 100;
+            }
+            return newProgress;
+          });
+        }, 200);
+      }, 0);
     },
     onError: (error: any) => {
-      setIsScanning(false);
-      setScanProgress(0);
-      toast({
-        title: "Scan Failed",
-        description: error.message || "Failed to start scan",
-        variant: "destructive",
-      });
+      setTimeout(() => {
+        setIsScanning(false);
+        setScanProgress(0);
+        toast({
+          title: "Scan Failed",
+          description: error.message || "Failed to start scan",
+          variant: "destructive",
+        });
+      }, 0);
     },
   });
 

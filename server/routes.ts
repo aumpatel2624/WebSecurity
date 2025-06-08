@@ -16,6 +16,9 @@ const scanLimiter = rateLimit({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Trust proxy for rate limiting in cloud environments
+  app.set('trust proxy', 1);
+  
   // Security middleware
   app.use(helmet({
     contentSecurityPolicy: {
